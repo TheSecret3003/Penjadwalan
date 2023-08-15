@@ -1,4 +1,5 @@
 <?php
+setlocale(LC_ALL, 'IND');
 require 'connection.php';
 require 'global.php';
 require 'templates/dashboard/header.php';
@@ -82,7 +83,7 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                     <tr>
                                         <th scope="row"><?= $no++; ?></th>
                                         <td><?= $bk['nama_kegiatan']; ?></td>
-                                        <td><?= $bk['waktu_kegiatan']; ?></td>
+                                        <td><?= formatDate($bk['waktu_kegiatan'], 'd F Y H:i'); ?></td>
                                         <td><?= $bk['tempat_kegiatan']; ?></td>
                                         <td><?= $bk['asal_surat']; ?></td>
                                         <td>

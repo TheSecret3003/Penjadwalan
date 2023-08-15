@@ -2,7 +2,7 @@
 require 'connection.php';
 require 'global.php';
 require 'templates/dashboard/header.php';
-// require 'templates/dashboard/sidebar.php';
+require 'templates/dashboard/sidebar.php';
 
 guardAuth();
 
@@ -69,8 +69,10 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
 
                                     
                                     for ($i = 0; $i < sizeof($surat); $i++) {
-                                        $kegiatan = 'Acara : '.$surat[$i]['nama_kegiatan'].'<br>'.'Waktu : '.$surat[$i]['waktu_kegiatan'].'<br>'.'Tempat : '.$surat[$i]['tempat_kegiatan'];
+                                        $date = formatDate($surat[$i]['waktu_kegiatan'], 'd F Y H:i');
+                                        $kegiatan = 'Acara : '.$surat[$i]['nama_kegiatan'].'<br>'.'Waktu : '.$date.'<br>'.'Tempat : '.$surat[$i]['tempat_kegiatan'];
                                         $surat[$i]['kegiatan'] = $kegiatan;
+                                        
                                     }
 
                                     $data_surat = array_slice($surat,$first_page, $limit);

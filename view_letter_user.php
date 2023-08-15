@@ -1,19 +1,19 @@
 <?php
+setlocale(LC_ALL, 'IND');
 require 'connection.php';
 require 'global.php';
 require 'templates/dashboard/header.php';
-
-if(auth()['user']['type'] == 'admin'){
-    require 'templates/dashboard/sidebar.php';
-} else {
-    require 'templates/dashboard/sidebar_user.php';
-}
+require 'templates/dashboard/sidebar_user.php';
 
 guardAuth();
+if (isset($_POST['hapus'])) {
+    $id = $_POST['id'];
 
-$current = date("d-m-Y h:i:sa");
+    $sql = "DELETE FROM surat WHERE id='$id'";
+    $result = mysqli_query($conn, $sql);
 
-// echo $current;
+    setFlash('alert', 'success', 'Data surat berhasil dihapus');
+}
 
 $sqlQuerySearch = '';
 
@@ -21,11 +21,12 @@ $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
 $month = isset($_POST['month']) ? $_POST['month'] : date('m');
 $year = isset($_POST['year']) ? $_POST['year'] : date('Y');
 
+
 if (isset($_POST['search']) && $keyword) {
     $sqlQuerySearch = " AND nama_kegiatan LIKE '%$keyword%' OR tempat_kegiatan LIKE '%$keyword%' OR asal_surat LIKE '%$keyword%'";
 }
 
-$sql = "SELECT * FROM surat WHERE waktu_kegiatan >= DATE(NOW()) AND month(waktu_kegiatan)='$month' AND year(waktu_kegiatan) = '$year'" . $sqlQuerySearch;
+$sql = "SELECT * FROM surat WHERE month(waktu_kegiatan)='$month' AND year(waktu_kegiatan) = '$year'" . $sqlQuerySearch;
 $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -79,12 +80,15 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                 <button class="btn btn-outline-primary" type="submit" name="search" value="1">Cari</button>
                             </div>
                         </form>
-                        <table class="table table-bordered table-striped yajra-datatable">
+                        <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Kegiatan</th>
+                                    <th scope="col">Nama Kegiatan</th>
+                                    <th scope="col">Waktu Kegiatan</th>
+                                    <th scope="col">Tempat Kegiatan</th>
                                     <th scope="col">Asal Surat</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,24 +103,20 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                     $data_amount = sizeof($surat);
                                     $total_page = ceil($data_amount / $limit);
 
-                                    
-                                    for ($i = 0; $i < sizeof($surat); $i++) {
-                                        $date = formatDate($surat[$i]['waktu_kegiatan'], 'd F Y H:i');
-                                        $kegiatan = 'Acara : '.$surat[$i]['nama_kegiatan'].'<br>'.'Waktu : '.$date.'<br>'.'Tempat : '.$surat[$i]['tempat_kegiatan'];
-                                        $surat[$i]['kegiatan'] = $kegiatan;
-                                        
-                                    }
-
                                     $data_surat = array_slice($surat,$first_page, $limit);
 
                                     $no = $first_page+1;
-                                    
                                 ?>
-                                <?php foreach ($surat as $bk) : ?>
+                                <?php foreach ($data_surat as $bk) : ?>
                                     <tr>
                                         <th scope="row"><?= $no++; ?></th>
-                                        <td><?php echo $bk['kegiatan']; ?></td>
+                                        <td><?= $bk['nama_kegiatan']; ?></td>
+                                        <td><?= formatDate($bk['waktu_kegiatan'], 'd F Y H:i'); ?></td>
+                                        <td><?= $bk['tempat_kegiatan']; ?></td>
                                         <td><?= $bk['asal_surat']; ?></td>
+                                        <td>
+                                            <button name="download" class="badge text-bg-success border-0" onclick="JavaScript:window.location.href='download.php?file=<?= $bk['gambar']; ?>';">download</button>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -138,9 +138,6 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                 </li>
                             </ul>
                         </nav>
-                        <div class="card-footer clearfix">
-                            <a href="#" class="btn btn-sm btn-info float-left" id="myButton">Export to Excel</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -148,30 +145,6 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
       </div>
     </section>
 </div>
-
-<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
-
-<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
-<script>
-  $(document).ready(function(e){
-    $("#myButton").click(function(e){
-
-      $(".yajra-datatable").table2excel({
-
-        name:"Worksheet Name",
-
-        filename:"kegiatan",//do not include extension
-
-        fileext:".xlsx" // file extension
-
-      });
-
-    });
-
-  });
-
-</script>
-
 
 <?php
 require 'mysql-footer.php';

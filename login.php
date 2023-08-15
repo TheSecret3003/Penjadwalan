@@ -22,7 +22,12 @@ if (isset($_POST['submit'])) {
             ]
         ];
         setFlash('alert', 'success', 'Anda berhasil login');
-        return header("location: view_letter.php");
+        if($user['type'] == 'admin'){
+            return header("location: view_letter.php");
+        } else {
+            return header("location: view_letter_user.php");
+        }
+        
     } else {
         setFlash('alert', 'danger', 'Gagal login, Silahkan coba lagi!');
     }

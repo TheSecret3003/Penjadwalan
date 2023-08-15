@@ -18,12 +18,15 @@ if (isset($_POST['hapus'])) {
 $sqlQuerySearch = '';
 
 $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+$month = isset($_POST['month']) ? $_POST['month'] : date('m');
+$year = isset($_POST['year']) ? $_POST['year'] : date('Y');
+
 
 if (isset($_POST['search']) && $keyword) {
-    $sqlQuerySearch = " WHERE nama_kegiatan LIKE '%$keyword%' OR tempat_kegiatan LIKE '%$keyword%' OR asal_surat LIKE '%$keyword%'";
+    $sqlQuerySearch = " AND nama_kegiatan LIKE '%$keyword%' OR tempat_kegiatan LIKE '%$keyword%' OR asal_surat LIKE '%$keyword%'";
 }
 
-$sql = "SELECT * FROM surat" . $sqlQuerySearch;
+$sql = "SELECT * FROM surat WHERE month(waktu_kegiatan)='$month' AND year(waktu_kegiatan) = '$year'" . $sqlQuerySearch;
 $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -47,6 +50,31 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                     <div class="card-body">
                         <?php require 'templates/alert.php' ?>
                         <form action="" class="py-2" method="post">
+                            <div class="form-group">
+                                <select name='month' style='padding:4px'>
+                                        <option value="01" <?php echo ($month)=='01' ?'selected' :'' ?>>Januari</option>
+                                        <option value="02" <?php echo ($month)=='02' ?'selected' :'' ?>>Februari</option>
+                                        <option value="03" <?php echo ($month)=='03' ?'selected' :'' ?>>Maret</option>
+                                        <option value="04" <?php echo ($month)=='04' ?'selected' :'' ?>>April</option>
+                                        <option value="05" <?php echo ($month)=='05' ?'selected' :'' ?>>Mei</option>
+                                        <option value="06" <?php echo ($month)=='06' ?'selected' :'' ?>>Juni</option>
+                                        <option value="07" <?php echo ($month)=='07' ?'selected' :'' ?>>Juli</option>
+                                        <option value="08" <?php echo ($month)=='08' ?'selected' :'' ?>>Agustus</option>
+                                        <option value="09" <?php echo ($month)=='09' ?'selected' :'' ?>>September</option>
+                                        <option value="10" <?php echo ($month)=='10' ?'selected' :'' ?>>Oktober</option>
+                                        <option value="11" <?php echo ($month)=='11' ?'selected' :'' ?>>November</option>
+                                        <option value="12" <?php echo ($month)=='12' ?'selected' :'' ?>>Desember</option>
+                                </select>
+                                <select name="year" style='padding:4px'>
+                                    <?php
+                                    $mulai= date('Y') - 5;
+                                    for($i = $mulai;$i<$mulai + 10;$i++){
+                                        $sel = $i == $year ? 'selected' : '';
+                                        echo '<option value="'.$i.'"'.$sel.'>'.$i.'</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="Cari Surat..." name="keyword" value="<?= $keyword ?>" />
                                 <button class="btn btn-outline-primary" type="submit" name="search" value="1">Cari</button>
@@ -88,6 +116,7 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                         <td><?= $bk['asal_surat']; ?></td>
                                         <td>
                                             <a href="edit_letter.php?id=<?= $bk['id']; ?>" class="badge text-bg-primary">edit</a>
+                                            <button name="download" class="badge text-bg-success border-0" onclick="JavaScript:window.location.href='download.php?file=<?= $bk['gambar']; ?>';">download</button>
                                             <form action="" method="post" class="d-inline-block">
                                                 <input type="hidden" name="id" value="<?= $bk['id']; ?>">
                                                 <button name="hapus" class="badge text-bg-danger border-0">hapus</button>

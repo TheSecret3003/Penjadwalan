@@ -88,18 +88,9 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                    <a href="<?= url() . '/view_letter.php'; ?>" class="nav-link <?php echo (str_contains($url, 'view')) ? "active":"" ;?>">
+                    <a href="<?= url() . '/view_letter_user.php'; ?>" class="nav-link <?php echo (str_contains($url, 'view')) ? "active":"" ;?>">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Lihat Surat Masuk</p>
-                    </a>
-                    </li>
-                </ul>
-                
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                    <a href="<?= url() . '/add_letter.php'; ?>" class="nav-link <?php echo (str_contains($url, 'add')) ? "active":"" ;?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tambah Surat</p>
                     </a>
                     </li>
                 </ul>

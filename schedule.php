@@ -27,6 +27,31 @@ if (isset($_POST['search']) && $keyword) {
 
 $sql = "SELECT * FROM surat WHERE waktu_kegiatan >= DATE(NOW()) AND month(waktu_kegiatan)='$month' AND year(waktu_kegiatan) = '$year'" . $sqlQuerySearch;
 $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
+
+?>
+<?php 
+    $limit = 10;
+    $page = isset($_GET['page'])?(int)$_GET['page'] : 1;
+    $first_page = ($page>1) ? ($page * $limit) - $limit : 0;	
+
+    $previous = $page - 1;
+    $next = $page + 1;
+
+    $data_amount = sizeof($surat);
+    $total_page = ceil($data_amount / $limit);
+
+    
+    for ($i = 0; $i < sizeof($surat); $i++) {
+        $date = formatDate($surat[$i]['waktu_kegiatan'], 'd F Y H:i');
+        $kegiatan = 'Acara : '.$surat[$i]['nama_kegiatan'].'<br>'.'Waktu : '.$date.'<br>'.'Tempat : '.$surat[$i]['tempat_kegiatan'];
+        $surat[$i]['kegiatan'] = $kegiatan;
+        
+    }
+
+    $data_surat = array_slice($surat,$first_page, $limit);
+
+    $no = $first_page+1;
+    
 ?>
 
 <div class="content-wrapper">
@@ -79,48 +104,31 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                                 <button class="btn btn-outline-primary" type="submit" name="search" value="1">Cari</button>
                             </div>
                         </form>
-                        <table class="table table-bordered table-striped yajra-datatable">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Kegiatan</th>
-                                    <th scope="col">Asal Surat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                    $limit = 10;
-                                    $page = isset($_GET['page'])?(int)$_GET['page'] : 1;
-                                    $first_page = ($page>1) ? ($page * $limit) - $limit : 0;	
-
-                                    $previous = $page - 1;
-                                    $next = $page + 1;
-
-                                    $data_amount = sizeof($surat);
-                                    $total_page = ceil($data_amount / $limit);
-
-                                    
-                                    for ($i = 0; $i < sizeof($surat); $i++) {
-                                        $date = formatDate($surat[$i]['waktu_kegiatan'], 'd F Y H:i');
-                                        $kegiatan = 'Acara : '.$surat[$i]['nama_kegiatan'].'<br>'.'Waktu : '.$date.'<br>'.'Tempat : '.$surat[$i]['tempat_kegiatan'];
-                                        $surat[$i]['kegiatan'] = $kegiatan;
-                                        
-                                    }
-
-                                    $data_surat = array_slice($surat,$first_page, $limit);
-
-                                    $no = $first_page+1;
-                                    
-                                ?>
-                                <?php foreach ($surat as $bk) : ?>
+                        <div id="docx">
+                            <div class="WordSection1">
+                            <table class="table table-bordered table-striped yajra-datatable">
+                                <thead>
                                     <tr>
-                                        <th scope="row"><?= $no++; ?></th>
-                                        <td><?php echo $bk['kegiatan']; ?></td>
-                                        <td><?= $bk['asal_surat']; ?></td>
+                                        <th scope="col" class="number">No</th>
+                                        <th scope="col" class="activity">Kegiatan</th>
+                                        <th scope="col" class="origin">Asal Surat</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    
+                                    <?php foreach ($surat as $bk) : ?>
+                                        <tr>
+                                            <td scope="row" class="number"><?= $no++; ?></th>
+                                            <td class="activity"><?php echo $bk['kegiatan']; ?></td>
+                                            <td class="origin"><?= $bk['asal_surat']; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            </div>
+                            
+                        </div>
+                        
                         <nav>
                             <ul class="pagination justify-content-center">
                                 <li class="page-item">
@@ -139,7 +147,8 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                             </ul>
                         </nav>
                         <div class="card-footer clearfix">
-                            <a href="#" class="btn btn-sm btn-info float-left" id="myButton">Export to Excel</a>
+                            <button class="btn btn-sm btn-info float-left" id='export'>Export to Word</button>
+                            <!-- <a href="#" class="btn btn-sm btn-info float-left" id="myButton">Export to Word</a> -->
                         </div>
                     </div>
                 </div>
@@ -148,8 +157,6 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
       </div>
     </section>
 </div>
-
-<script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 <script>
@@ -171,6 +178,43 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
   });
 
 </script>
+<script>
+    window.export.onclick = function() {
+ 
+ if (!window.Blob) {
+    alert('Your legacy browser does not support this action.');
+    return;
+ }
+
+ var html, link, blob, url, css;
+ 
+ // EU A4 use: size: 841.95pt 595.35pt;
+ // US Letter use: size:11.0in 8.5in;
+ 
+ css = (
+   '<style>' +
+   'table{margin: 20px auto;border-collapse:collapse;} th.number{border:1px gray solid;width:5em;padding:2px;} th.activity{border:1px gray solid;width:25em;padding:2px;} th.origin{border:1px gray solid;width:10em;padding:2px;} td.number{border:1px gray solid;width:5em;padding:2px;text-align: center;} td.activity{border:1px gray solid;width:25em;padding:2px;} td.origin{border:1px gray solid;width:10em;padding:2px;text-align: center;} .'+
+   '</style>'
+ );
+ 
+ html = window.docx.innerHTML;
+ blob = new Blob(['\ufeff', css + html], {
+   type: 'application/msword'
+ });
+ url = URL.createObjectURL(blob);
+ link = document.createElement('A');
+ link.href = url;
+ // Set default file name. 
+ // Word will append file extension - do not add an extension here.
+ link.download = 'jadwal';   
+ document.body.appendChild(link);
+ if (navigator.msSaveOrOpenBlob ) navigator.msSaveOrOpenBlob( blob, 'jadwal.doc'); // IE10-11
+         else link.click();  // other browsers
+ document.body.removeChild(link);
+};
+    
+</script>
+
 
 
 <?php

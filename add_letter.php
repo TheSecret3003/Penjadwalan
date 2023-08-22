@@ -16,7 +16,7 @@ function add()
     $datetime = $_POST['datetime'];
 
     if (isEmpty([$name, $place, $origin,$datetime])) {
-        return setFlash('error_tambah', 'danger', 'Semua field wajib di-isi');
+        return setFlash('error_tambah', 'danger', 'Harap isi semua field');
     }
     $path = uploadImage($file);
     if (!$path) return setFlash('error_tambah', 'danger', 'Gagal menyimpan.');
@@ -50,8 +50,14 @@ if (isset($_POST['tambah'])) {
           <div class="card card-primary">
             <div class="card-header">
               <h3 class="card-title">Tambah Surat</h3>
+            
             </div>
             <div class="card-body">
+            <?php if ($error = getFlash('error_tambah')) : ?>
+                <div class="alert alert-<?= $error['type']; ?> " role="alert">
+                    <div><?= $error['message']; ?></div>
+                </div>
+            <?php endif; ?>
               <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-group row">
                     <label for="name" class="col-md-4 col-form-label text-md-right">Nama Kegiatan</label>

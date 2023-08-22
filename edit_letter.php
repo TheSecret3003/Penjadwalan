@@ -16,7 +16,7 @@ function update($id, $letter)
     $datetime = $_POST['datetime'];
 
     if (isEmpty([$name, $place, $origin,$datetime])) {
-        return setFlash('error_edit', 'danger', 'Semua field wajib di-isi');
+        return setFlash('error_edit', 'danger', 'Harap isi semua field');
     }
 
     $path = $letter['cover'];
@@ -63,6 +63,11 @@ if (isset($_POST['edit'])) {
               <h3 class="card-title">Tambah Surat</h3>
             </div>
             <div class="card-body">
+            <?php if ($error = getFlash('error_edit')) : ?>
+                <div class="alert alert-<?= $error['type']; ?> " role="alert">
+                    <div><?= $error['message']; ?></div>
+                </div>
+            <?php endif; ?>
               <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-group row">
                     <label for="name" class="col-md-4 col-form-label text-md-right">Nama Kegiatan</label>

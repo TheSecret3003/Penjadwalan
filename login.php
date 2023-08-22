@@ -28,8 +28,10 @@ if (isset($_POST['submit'])) {
             return header("location: view_letter_user.php");
         }
         
+    } elseif(isEmpty([$username, $password])) {
+        setFlash('alert', 'warning', 'Harap isi semua field');
     } else {
-        setFlash('alert', 'danger', 'Gagal login, Silahkan coba lagi!');
+        setFlash('alert', 'danger', 'Login gagal. Username atau Password Anda Salah');
     }
 }
 ?>
@@ -59,7 +61,6 @@ if (isset($_POST['submit'])) {
 
     <span></span>
     <?php require 'templates/alert.php' ?>
-    <?php require 'templates/alert.php'; ?>
 
     <form action="" method="POST">
             

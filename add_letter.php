@@ -7,6 +7,7 @@ require 'templates/dashboard/sidebar.php';
 
 guardAuth();
 
+// Fungsi untuk menambahkan surat
 function add()
 {
     $file = $_FILES['image'];
@@ -30,7 +31,7 @@ if (isset($_POST['tambah'])) {
     add();
 }
 ?>
-
+<!-- Tampilan form untuk menambahkan surat -->
 <div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">

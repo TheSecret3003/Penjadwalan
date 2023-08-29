@@ -4,6 +4,7 @@ require 'connection.php';
 require 'global.php';
 require 'templates/dashboard/header.php';
 
+// Fungsi login
 if (isset($_POST['submit'])) {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -57,6 +58,7 @@ if (isset($_POST['submit'])) {
 <body>
 
  <section>
+    <!-- Tampilan halaman login -->
   
 
     <span></span>

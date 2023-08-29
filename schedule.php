@@ -11,9 +11,9 @@ if(auth()['user']['type'] == 'admin'){
 
 guardAuth();
 
+// Filter kegiatan berdasarkan tanggal dan keyword pencarian
 $current = date("d-m-Y h:i:sa");
 
-// echo $current;
 
 $sqlQuerySearch = '';
 
@@ -30,6 +30,7 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
 
 ?>
 <?php 
+    // Pagination
     $limit = 10;
     $page = isset($_GET['page'])?(int)$_GET['page'] : 1;
     $first_page = ($page>1) ? ($page * $limit) - $limit : 0;	
@@ -160,6 +161,7 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
 
 <script src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 <script>
+    // Fungsi mengubah tabel ke document file
   $(document).ready(function(e){
     $("#myButton").click(function(e){
 

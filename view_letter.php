@@ -15,6 +15,7 @@ if (isset($_POST['hapus'])) {
     setFlash('alert', 'success', 'Data surat berhasil dihapus');
 }
 
+// Filter surat berdasarkan tanggal dan keyword pencarian
 $sqlQuerySearch = '';
 
 $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
@@ -93,6 +94,7 @@ $surat = query($sql)->fetch_all(MYSQLI_ASSOC);
                             </thead>
                             <tbody>
                                 <?php 
+                                // Pagination
                                     $limit = 10;
                                     $page = isset($_GET['page'])?(int)$_GET['page'] : 1;
                                     $first_page = ($page>1) ? ($page * $limit) - $limit : 0;	

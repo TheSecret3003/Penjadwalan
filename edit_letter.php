@@ -7,6 +7,7 @@ require 'templates/dashboard/sidebar.php';
 
 guardAuth();
 
+// Fungsi untuk mengedit surat
 function update($id, $letter)
 {
     $file = $_FILES['image'];
@@ -42,6 +43,7 @@ if (isset($_POST['edit'])) {
 }
 ?>
 
+<!-- Tampilan form edit surat -->
 <div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">

@@ -1,4 +1,5 @@
 <?php
+// Connect ke database
 $hostmysql="localhost";
 $username="root";
 $password="";
